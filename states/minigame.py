@@ -8,7 +8,7 @@ QUESTIONS_PER_LESSON = 8
 class MinigameState:
     """Quiz mini-game: show JP character/word, pick from 4 choices."""
 
-    def __init__(self, game, lesson: dict, npc_grade: int):
+    def __init__(self, game, lesson: dict, npc_grade: int, on_complete=None):
         self.game     = game
         self.lesson   = lesson
         self.grade    = npc_grade
@@ -26,8 +26,9 @@ class MinigameState:
         self.feedback_timer = 0
         self.chosen_idx     = -1
 
-        self.stars     = self._make_stars()
-        self.frame     = 0
+        self.stars      = self._make_stars()
+        self.frame      = 0
+        self.on_complete = on_complete  # callback when lesson finished
         self._build_question()
 
     def _build_pool(self):
@@ -106,6 +107,8 @@ class MinigameState:
         self.feedback_timer = 75
 
     def _finish(self):
+        if self.on_complete:
+            self.on_complete(self.score)
         from states.result import ResultState
         self.game.state = ResultState(
             self.game, self.score, len(self.items), self.lesson, self.grade)

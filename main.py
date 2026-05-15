@@ -1,5 +1,4 @@
-import pygame
-import sys
+import pygame, sys
 from settings import SW, SH, FPS, TITLE, load_fonts
 
 
@@ -8,17 +7,21 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((SW, SH))
         pygame.display.set_caption(TITLE)
-        self.clock  = pygame.time.Clock()
+        self.clock   = pygame.time.Clock()
         load_fonts()
-
-        self.lang      = "en"
-        self.overworld = None   # set after lang select
-        self.state     = None
+        self.lang        = "en"
+        self.grade_done  = set()    # grades fully completed
+        self.lesson_done = set()    # individual lessons done
+        self.overworld   = None
         self._go_lang_select()
 
     def _go_lang_select(self):
         from states.lang_select import LangSelectState
         self.state = LangSelectState(self)
+
+    def start_tutorial(self):
+        from states.tutorial import TutorialState
+        self.state = TutorialState(self)
 
     def start_overworld(self):
         from states.overworld import OverworldState
@@ -29,10 +32,8 @@ class Game:
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    pygame.quit(); sys.exit()
                 self.state.handle(event)
-
             self.state.update()
             self.state.draw(self.screen)
             pygame.display.flip()
