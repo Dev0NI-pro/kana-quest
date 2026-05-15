@@ -24,13 +24,13 @@ class Player:
         self.target_py = self.py
         self.bob    = 0.0
 
-    def try_move(self, dx, dy, tilemap):
+    def try_move(self, dx, dy, tilemap, grade_progress=None):
         if dx == -1: self.dir = DIR_LEFT
         if dx ==  1: self.dir = DIR_RIGHT
         if dy == -1: self.dir = DIR_UP
         if dy ==  1: self.dir = DIR_DOWN
         nx, ny = self.tx + dx, self.ty + dy
-        if tilemap.is_passable(nx, ny):
+        if tilemap.is_passable(nx, ny, grade_progress):
             self.tx = nx; self.ty = ny
             self.target_px = nx * TILE
             self.target_py = ny * TILE

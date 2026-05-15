@@ -8,7 +8,7 @@ INTERACT_KEY = pygame.K_SPACE
 
 # Which lessons belong to which grade
 GRADE_LESSONS = {
-    1: {"greetings", "hiragana_vowels", "numbers_1_10"},
+    1: {"greetings", "hiragana_vowels", "numbers_1_10", "colors"},
     2: {"hiragana_ta", "school_items", "days_of_week"},
     3: {"katakana_basic", "food", "telling_time"},
     4: {"katakana_loanwords", "adjectives", "verbs_basic"},
@@ -65,7 +65,7 @@ class OverworldState:
     def __init__(self, game):
         self.game    = game
         self.tilemap = Tilemap()
-        self.player  = Player(11, 7)    # starts in entrance hall
+        self.player  = Player(11, 6)    # starts in entrance hall
         self.npcs    = [NPC(*d) for d in NPC_DATA]
         self.dialog  = None
         self.pending_npc = None
@@ -204,20 +204,7 @@ class OverworldState:
                     self.locked_prompt = ("🔒 Locked" if self.game.lang=="en" else "🔒 Verrouillé")
 
     def _try_walk(self, dx, dy):
-        # Pass grade progress so locked doors block correctly
-        nx, ny = self.player.tx + dx, self.player.ty + dy
-        if self.player.dir == [DIR_DOWN, DIR_LEFT, DIR_RIGHT, DIR_UP][[0,1,-1,0].index(dy) if dy != 0 else [0,1,-1,0].index(dx)+2] if False else True:
-            pass
-        if self.tilemap.is_passable(nx, ny, self.grade_done):
-            self.player.try_move(dx, dy, self.tilemap)
-            return True
-        else:
-            # Face direction even if blocked
-            if dx == -1: self.player.dir = DIR_LEFT
-            if dx ==  1: self.player.dir = DIR_RIGHT
-            if dy == -1: self.player.dir = DIR_UP
-            if dy ==  1: self.player.dir = DIR_DOWN
-            return False
+        return self.player.try_move(dx, dy, self.tilemap, self.grade_done)
 
     # ── Draw ──────────────────────────────────────────────────────────────────
     def draw(self, surf):
